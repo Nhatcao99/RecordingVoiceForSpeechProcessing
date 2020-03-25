@@ -3,52 +3,104 @@ import threading
 import pyaudio
 import wave
 import nltk
+import argparse
+from nltk import word_tokenize,sent_tokenize
 
+
+arr = [] # this is the array store the tokenized senteced from the text
+def open_file(file_name): #add a flag value for to consider making an array or not later on
+    f = open(file_name,"r")
+    f1 = f.readlines()
+    #reading papper in as file then you tokenize to split sentence
+    #add sentence to the list arr
+    for x in f1:
+        a_list = nltk.tokenize.sent_tokenize(x)
+        arr.extend(a_list)
+
+def Read(): #This function is used to token
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filename" , help = "this will read some file", type = str)
+
+    args = parser.parse_args()
+    if args.filename:
+        open_file(args.filename)
+        # print(arr)
+#todo:make a button to get the text
 class Record():
+    isrecording = False #flag for recording
+    index = 0 
+    #this index is to count the avaible sentences
+    #upon reach arr.end() this will help make the program stop
     chunk = 1024 
     sample_format = pyaudio.paInt16 
     channels = 2
     fs = 44100  
     
-    frames = [] 
+###notice if you don't include the self, all the variance is undefined
+
+
+    frames = [] #this array store ongoing record voice
     def __init__(self, master):
         self.isrecording = False
         self.button1 = tk.Button(main, text='Start Recording',command=self.startrecording)
-        self.button2 = tk.Button(main, text='Stop Recording',command=self.stoprecording)
-      
+        self.button2 = tk.Button(main, text='Save Record',command=self.stoprecording)
+        self.button3 = tk.Button(main, text='Stop Recording',command=self.destroyprogress)
         self.button1.pack()
         self.button2.pack()
+        self.button3.pack()
 
     def startrecording(self):
-        self.p = pyaudio.PyAudio()  
-        self.stream = self.p.open(format=self.sample_format,channels=self.channels,rate=self.fs,frames_per_buffer=self.chunk,input=True)
         self.isrecording = True
-        print('Recording')
-        print('') #prin
-        t = threading.Thread(target=self.record)
-        t.start()
+        if self.isrecording: 
+            self.p = pyaudio.PyAudio()  
+            self.stream = self.p.open(format=self.sample_format,channels=self.channels,rate=self.fs,frames_per_buffer=self.chunk,input=True)
+            print('Recording')
+            ########
+            if(self.index < len(arr)):
+                print(arr[self.index])
+            else:
+                print("Nothing Else to record. You gotta stop")
+            self.index += 1
+            print(self.index)
+            ######
+            t = threading.Thread(target=self.record)
+            t.start()
 
     def stoprecording(self):
         self.isrecording = False
+        if(self.index == len(arr)):
+            main.destroy()
         print('recording complete')
-        self.filename=input('the filename?')
-        self.filename = self.filename+".wav"
+        # self.filename=input('self.')
+        self.filename = "sentence" + str(self.index) + ".wav"
+        # creating wav file
         wf = wave.open(self.filename, 'wb')
         wf.setnchannels(self.channels)
         wf.setsampwidth(self.p.get_sample_size(self.sample_format))
         wf.setframerate(self.fs)
         wf.writeframes(b''.join(self.frames))
         wf.close()
-        main.destroy() # this destroyer make record stop completely
+        self.frames.clear() 
+        # to clear the frame array and kill the previous record
+        # with out destroying the entire record progress
+        print("Recorded file: " + self.filename)
+
+    def destroyprogress(self): # make another function and button to destroy progress
+        main.destroy()
+
     def record(self):
-       
         while self.isrecording:
             data = self.stream.read(self.chunk)
             self.frames.append(data)
-		
-
+        
+Read() 
+## reading file function
+## this function implemented argument
+## make you input paper file
 main = tk.Tk()
 main.title('recorder')
 main.geometry('200x50')
 app = Record(main)
-main.mainloop()
+
+
+main.mainloop() # repeat until stop record

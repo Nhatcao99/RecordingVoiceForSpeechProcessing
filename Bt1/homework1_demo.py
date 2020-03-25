@@ -8,13 +8,14 @@ from nltk import word_tokenize,sent_tokenize
 
 
 arr = [] # this is the array store the tokenized senteced from the text
-index  = 0
 def open_file(file_name): #add a flag value for to consider making an array or not later on
     f = open(file_name,"r")
     f1 = f.readlines()
-    # nltk.download('punkt')
+    #reading papper in as file then you tokenize to split sentence
+    #add sentence to the list arr
     for x in f1:
-        arr.extend(list(sent_tokenize(x)))
+        a_list = nltk.tokenize.sent_tokenize(x)
+        arr.extend(a_list)
 
 def Read(): #This function is used to token
     parser = argparse.ArgumentParser()
@@ -26,13 +27,19 @@ def Read(): #This function is used to token
         # print(arr)
 #todo:make a button to get the text
 class Record():
-    index = 0
+    isrecording = False #flag for recording
+    index = 0 
+    #this index is to count the avaible sentences
+    #upon reach arr.end() this will help make the program stop
     chunk = 1024 
     sample_format = pyaudio.paInt16 
     channels = 2
     fs = 44100  
     
-    frames = [] 
+###notice if you don't include the self, all the variance is undefined
+
+
+    frames = [] #this array store ongoing record voice
     def __init__(self, master):
         self.isrecording = False
         self.button1 = tk.Button(main, text='Start Recording',command=self.startrecording)
@@ -43,24 +50,40 @@ class Record():
         self.button3.pack()
 
     def startrecording(self):
-        self.p = pyaudio.PyAudio()  
-        self.stream = self.p.open(format=self.sample_format,channels=self.channels,rate=self.fs,frames_per_buffer=self.chunk,input=True)
         self.isrecording = True
-        print('Recording')
-        t = threading.Thread(target=self.record)
-        t.start()
+        if self.isrecording: 
+            self.p = pyaudio.PyAudio()  
+            self.stream = self.p.open(format=self.sample_format,channels=self.channels,rate=self.fs,frames_per_buffer=self.chunk,input=True)
+            print('Recording')
+            ########
+            if(self.index < len(arr)):
+                print(arr[self.index])
+            else:
+                print("Nothing Else to record. You gotta stop")
+            self.index += 1
+            print(self.index)
+            ######
+            t = threading.Thread(target=self.record)
+            t.start()
 
     def stoprecording(self):
         self.isrecording = False
+        if(self.index == len(arr)):
+            main.destroy()
         print('recording complete')
-        self.filename=input('the filename?')
-        self.filename = self.filename+".wav"
+        # self.filename=input('self.')
+        self.filename = "sentence" + str(self.index) + ".wav"
+        # creating wav file
         wf = wave.open(self.filename, 'wb')
         wf.setnchannels(self.channels)
         wf.setsampwidth(self.p.get_sample_size(self.sample_format))
         wf.setframerate(self.fs)
         wf.writeframes(b''.join(self.frames))
         wf.close()
+        self.frames.clear() 
+        # to clear the frame array and kill the previous record
+        # with out destroying the entire record progress
+        print("Recorded file: " + self.filename)
 
     def destroyprogress(self): # make another function and button to destroy progress
         main.destroy()
@@ -70,15 +93,14 @@ class Record():
             data = self.stream.read(self.chunk)
             self.frames.append(data)
 		
-# Read() ## reading file function
+Read() 
+## reading file function
+## this function implemented argument
+## make you input paper file
 main = tk.Tk()
 main.title('recorder')
 main.geometry('200x50')
 app = Record(main)
-# if(index < len(arr)):
-#     print(arr)
-# else:
-#     print("Nothing Else to record.")
-# index += 1
+
 
 main.mainloop() # repeat until stop record
