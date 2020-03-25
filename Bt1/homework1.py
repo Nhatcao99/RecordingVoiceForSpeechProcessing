@@ -42,8 +42,8 @@ class Record():
     frames = [] #this array store ongoing record voice
     def __init__(self, master):
         self.isrecording = False
-        self.button1 = tk.Button(main, text='Start Recording',command=self.startrecording)
-        self.button2 = tk.Button(main, text='Save Record',command=self.stoprecording)
+        self.button1 = tk.Button(main, text='Start Recording',command=self.startrecording,witdh = 40)
+        self.button2 = tk.Button(main, text='Save Record',command=self.stoprecording,witdh = 40)
         self.button3 = tk.Button(main, text='Stop Recording',command=self.destroyprogress)
         self.button1.pack()
         self.button2.pack()
@@ -99,7 +99,7 @@ Read()
 ## make you input paper file
 main = tk.Tk()
 main.title('recorder')
-main.geometry('200x50')
+main.geometry('1000x500')
 app = Record(main)
 
 
