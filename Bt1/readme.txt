@@ -1,3 +1,6 @@
+IF YOU HAPPEN USE THIS CODE AT THE MOMENT: run the homework1_demo.py  
+use the sentence.txt or any kind of file text to check, it is up to you
+
 Tutorial:
 Concept:
 Begin the software by open on command line with an argument(a txt file with the paper's information), example on macOS/Ubuntu command line:
@@ -27,3 +30,4 @@ It will delete the file you have save and you are good to record the senesce aga
 
 Button number4: Stop recording
 Shutdown everything (not recommended using upon finishing all the work)
+
