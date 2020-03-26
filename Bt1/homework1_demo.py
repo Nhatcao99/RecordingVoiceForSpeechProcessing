@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 import os
 import threading
 import pyaudio
@@ -57,23 +58,25 @@ class Record():
         if self.isrecording: 
             self.p = pyaudio.PyAudio()  
             self.stream = self.p.open(format=self.sample_format,channels=self.channels,rate=self.fs,frames_per_buffer=self.chunk,input=True)
-            print('Recording')
+            # print('Recording')
             ########
+            t = threading.Thread(target=self.record)
+            t.start()
+            ###move the threading up before the messagebox 
+            ###else get a nasty error
             if(self.index < len(arr)):
-                print(arr[self.index])
+                # print(arr[self.index])
+                messagebox.showinfo("Record Status", "The sentence" + "\n" + arr[self.index])
             else:
-                print("Nothing Else to record. You gotta stop")
+                messagebox.showinfo("Record Status", "There is nothing left to record")
             self.index += 1
             print(self.index)
             ######
-            t = threading.Thread(target=self.record)
-            t.start()
 
     def stoprecording(self):
         if self.isrecording:
             self.isrecording = False
-            print('recording complete')
-            # self.filename=input('self.')
+            # print('Recording complete!')
             self.filename = "sentence" + str(self.index) + ".wav"
             # creating wav file
             wf = wave.open(self.filename, 'wb')
@@ -85,21 +88,26 @@ class Record():
             self.frames.clear() 
             # to clear the frame array and kill the previous record
             # with out destroying the entire record progress
-            print("Recorded file: " + self.filename)
+            # print("Recorded file: " + self.filename) 
             if(self.index == len(arr)):
                 main.destroy()
+                messagebox.showinfo("Record Status", "Recording complete! \n Recorded file: " + self.filename \
+                    + "\n This is the last record in the file")
                 print("This is the last sentence of the file")
+            else:
+                messagebox.showinfo("Record Status", "Recording complete! \n Recorded file: " + self.filename)
+
         else:
-            print("There is no record avaible")
+                messagebox.showinfo("Record Status", "No record avaible")
 
     def destroyprevprogress(self):
         if os.path.exists(self.filename):
             os.remove(self.filename)
-            print("Deleted recorded file: " + self.filename)
+            messagebox.showinfo("Record Status", "Deleted recorded file: " + self.filename)
             self.filename = ""
             self.index -= 1
         else:
-            print("There is no file to delete")
+            messagebox.showinfo("Record Status", "No file to delete")
 
     def destroyprogress(self): # make another function and button to destroy progress
         main.destroy()

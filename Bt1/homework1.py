@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import messagebox
+import os
 import threading
 import pyaudio
 import wave
@@ -35,19 +37,21 @@ class Record():
     sample_format = pyaudio.paInt16 
     channels = 2
     fs = 44100  
-    
+    filename = "" #this to record self.file 
 ###notice if you don't include the self, all the variance is undefined
 
 
     frames = [] #this array store ongoing record voice
     def __init__(self, master):
         self.isrecording = False
-        self.button1 = tk.Button(main, text='Start Recording',command=self.startrecording,witdh = 40)
-        self.button2 = tk.Button(main, text='Save Record',command=self.stoprecording,witdh = 40)
-        self.button3 = tk.Button(main, text='Stop Recording',command=self.destroyprogress)
+        self.button1 = tk.Button(main, text='Start Recording',command=self.startrecording)
+        self.button2 = tk.Button(main, text='Save Record',command=self.stoprecording)
+        self.button3 = tk.Button(main, text='Delete Previou Record',command=self.destroyprevprogress)
+        self.button4 = tk.Button(main, text='Stop Recording',command=self.destroyprogress)
         self.button1.pack()
         self.button2.pack()
         self.button3.pack()
+        self.button4.pack()
 
     def startrecording(self):
         self.isrecording = True
@@ -58,6 +62,7 @@ class Record():
             ########
             if(self.index < len(arr)):
                 print(arr[self.index])
+                # messagebox.showerr("Record Status", "recording")
             else:
                 print("Nothing Else to record. You gotta stop")
             self.index += 1
@@ -67,23 +72,36 @@ class Record():
             t.start()
 
     def stoprecording(self):
-        self.isrecording = False
-        if(self.index == len(arr)):
-            main.destroy()
-        print('recording complete')
-        # self.filename=input('self.')
-        self.filename = "sentence" + str(self.index) + ".wav"
-        # creating wav file
-        wf = wave.open(self.filename, 'wb')
-        wf.setnchannels(self.channels)
-        wf.setsampwidth(self.p.get_sample_size(self.sample_format))
-        wf.setframerate(self.fs)
-        wf.writeframes(b''.join(self.frames))
-        wf.close()
-        self.frames.clear() 
-        # to clear the frame array and kill the previous record
-        # with out destroying the entire record progress
-        print("Recorded file: " + self.filename)
+        if self.isrecording:
+            self.isrecording = False
+            print('recording complete')
+            # self.filename=input('self.')
+            self.filename = "sentence" + str(self.index) + ".wav"
+            # creating wav file
+            wf = wave.open(self.filename, 'wb')
+            wf.setnchannels(self.channels)
+            wf.setsampwidth(self.p.get_sample_size(self.sample_format))
+            wf.setframerate(self.fs)
+            wf.writeframes(b''.join(self.frames))
+            wf.close()
+            self.frames.clear() 
+            # to clear the frame array and kill the previous record
+            # with out destroying the entire record progress
+            print("Recorded file: " + self.filename)
+            if(self.index == len(arr)):
+                main.destroy()
+                print("This is the last sentence of the file")
+        else:
+            print("There is no record avaible")
+
+    def destroyprevprogress(self):
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+            print("Deleted recorded file: " + self.filename)
+            self.filename = ""
+            self.index -= 1
+        else:
+            print("There is no file to delete")
 
     def destroyprogress(self): # make another function and button to destroy progress
         main.destroy()
@@ -99,7 +117,7 @@ Read()
 ## make you input paper file
 main = tk.Tk()
 main.title('recorder')
-main.geometry('1000x500')
+main.geometry('500x200')
 app = Record(main)
 
 
