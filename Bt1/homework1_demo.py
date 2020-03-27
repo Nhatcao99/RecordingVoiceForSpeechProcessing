@@ -21,16 +21,15 @@ def open_file(file_name): #add a flag value for to consider making an array or n
 
 def Read(): #This function is used to token
     parser = argparse.ArgumentParser()
-    parser.add_argument("filename" , help = "this will read some file", type = str)
-
+    parser.add_argument("filename" , help = "this will read some file into array", type = str)
     args = parser.parse_args()
     if args.filename:
         open_file(args.filename)
-        # print(arr)
-#todo:make a button to get the text
+    with open("output.txt", "a") as myfile: # append link to the output file
+        myfile.write(arr[0]) #first line of input file will be the link of the paper
 class Record():
     isrecording = False #flag for recording
-    index = 0 
+    index = 1 #first line will be the papare link so index doesn't start from zero 
     #this index is to count the avaible sentences
     #upon reach arr.end() this will help make the program stop
     chunk = 1024 
@@ -58,14 +57,12 @@ class Record():
         if self.isrecording: 
             self.p = pyaudio.PyAudio()  
             self.stream = self.p.open(format=self.sample_format,channels=self.channels,rate=self.fs,frames_per_buffer=self.chunk,input=True)
-            # print('Recording')
             ########
             t = threading.Thread(target=self.record)
             t.start()
             ###move the threading up before the messagebox 
             ###else get a nasty error
             if(self.index < len(arr)):
-                # print(arr[self.index])
                 messagebox.showinfo("Record Status", "The sentence" + "\n" + arr[self.index])
             else:
                 messagebox.showinfo("Record Status", "There is nothing left to record")
@@ -77,7 +74,7 @@ class Record():
         if self.isrecording:
             self.isrecording = False
             # print('Recording complete!')
-            self.filename = "sentence" + str(self.index) + ".wav"
+            self.filename = "sentence" + str(self.index - 1) + ".wav"
             # creating wav file
             wf = wave.open(self.filename, 'wb')
             wf.setnchannels(self.channels)
@@ -86,9 +83,10 @@ class Record():
             wf.writeframes(b''.join(self.frames))
             wf.close()
             self.frames.clear() 
+            with open("output.txt", "a") as myfile:
+                myfile.write("\nSentence" + str(self.index - 1) + "\n" + arr[self.index - 1]);
             # to clear the frame array and kill the previous record
             # with out destroying the entire record progress
-            # print("Recorded file: " + self.filename) 
             if(self.index == len(arr)):
                 main.destroy()
                 messagebox.showinfo("Record Status", "Recording complete! \n Recorded file: " + self.filename \

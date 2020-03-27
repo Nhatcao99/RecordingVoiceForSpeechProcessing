@@ -10,8 +10,12 @@ python homework1.py doisong.txt
 homework1.py is file name
 Doisong.txt is parsing argument(make sure the file exist)
 
-The program will divide the text file to sentences and store it in a array
+The program will divide the text file to sentences and store it in an array
 
+
+NOTE:during recording , every time you save a wave file , its name and the text in it will be appended to an output.txt. But if you choose to delete that file and re-record it (read the steps below), you must delete the appended lines in the file manually. 
+
+Usage:
 Button number1: Start Recording 
 The array will pass each sentence continuously every time you click this button
 Also at this point you are good to record
