@@ -1,4 +1,4 @@
-IF YOU HAPPEN USE THIS CODE AT THE MOMENT: run the homework1_demo.py  
+Use either homework1.py or homework1_demo.py
 use the sentence.txt or any kind of file text to check, it is up to you
 
 Tutorial:
