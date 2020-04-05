@@ -27,6 +27,8 @@ def Read(): #This function is used to token
         open_file(args.filename)
     with open("output.txt", "a") as myfile: # append link to the output file
         myfile.write(arr[0]) #first line of input file will be the link of the paper
+
+        
 class Record():
     isrecording = False #flag for recording
     index = 1 #first line will be the papare link so index doesn't start from zero 
@@ -43,6 +45,7 @@ class Record():
     frames = [] #this array store ongoing record voice
     def __init__(self, master):
         self.isrecording = False
+        #create buttons
         self.button1 = tk.Button(main, text='Start Recording',command=self.startrecording)
         self.button2 = tk.Button(main, text='Save Record',command=self.stoprecording)
         self.button3 = tk.Button(main, text='Delete Previou Record',command=self.destroyprevprogress)
@@ -84,7 +87,7 @@ class Record():
             wf.close()
             self.frames.clear() 
             with open("output.txt", "a") as myfile:
-                myfile.write("\nSentence" + str(self.index - 1) + "\n" + arr[self.index - 1]);
+                myfile.write("\nSentence" + str(self.index - 1) + ".wav" + "\n" + arr[self.index - 1]);
             # to clear the frame array and kill the previous record
             # with out destroying the entire record progress
             if(self.index == len(arr)):
@@ -108,13 +111,14 @@ class Record():
             messagebox.showinfo("Record Status", "No file to delete")
 
     def destroyprogress(self): # make another function and button to destroy progress
+        self.frames.clear() 
         main.destroy()
 
     def record(self):
         while self.isrecording:
             data = self.stream.read(self.chunk)
             self.frames.append(data)
-		
+        
 Read() 
 ## reading file function
 ## this function implemented argument

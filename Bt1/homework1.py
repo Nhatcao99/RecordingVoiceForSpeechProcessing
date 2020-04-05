@@ -87,7 +87,7 @@ class Record():
             wf.close()
             self.frames.clear() 
             with open("output.txt", "a") as myfile:
-                myfile.write("\nSentence" + str(self.index - 1) + "wav" + "\n" + arr[self.index - 1]);
+                myfile.write("\nSentence" + str(self.index - 1) + ".wav" + "\n" + arr[self.index - 1]);
             # to clear the frame array and kill the previous record
             # with out destroying the entire record progress
             if(self.index == len(arr)):
