@@ -56,8 +56,10 @@ class Record():
         self.button4.pack()
 
     def startrecording(self):
-        self.isrecording = True
         if self.isrecording: 
+            messagebox.showinfo("You are already recording. Please save the onging record before starting the new one")
+        else: 
+            self.isrecording = True
             self.p = pyaudio.PyAudio()  
             self.stream = self.p.open(format=self.sample_format,channels=self.channels,rate=self.fs,frames_per_buffer=self.chunk,input=True)
             ########
@@ -111,8 +113,10 @@ class Record():
             messagebox.showinfo("Record Status", "No file to delete")
 
     def destroyprogress(self): # make another function and button to destroy progress
-        self.frames.clear() 
-        main.destroy()
+        if self.isrecording:
+            messagebox.showinfo("There is a ongoing record. Please save before quit")
+        else:
+            main.destroy()
 
     def record(self):
         while self.isrecording:
